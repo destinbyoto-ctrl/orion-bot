@@ -1,0 +1,231 @@
+OrionBot backtest · BTCUSDT · 20200 barres 1m · 14 jours
+capital 1000 · mise 10.00 · expiration 5 barres · frais 0,10%/côté
+
+=== Beginner ===
+trades 282 · winrate 5.7% · P&L net -14.09 USDT (-1.41%)
+profit factor 0.05 · frais 15.63 · drawdown max 1.4% · série de pertes max 86
+plus grosse mise 52.90 · RUINE: non
+
+=== Balance ===
+trades 312 · winrate 4.8% · P&L net -34.64 USDT (-3.46%)
+profit factor 0.02 · frais 33.96 · drawdown max 3.5% · série de pertes max 60
+plus grosse mise 138.24 · RUINE: non
+
+=== Pro ===
+trades 316 · winrate 4.4% · P&L net -60.43 USDT (-6.04%)
+profit factor 0.02 · frais 59.42 · drawdown max 6.0% · série de pertes max 65
+plus grosse mise 249.90 · RUINE: non
+
+=== Expert ===
+trades 325 · winrate 5.2% · P&L net -77.70 USDT (-7.77%)
+profit factor 0.02 · frais 76.90 · drawdown max 7.8% · série de pertes max 63
+plus grosse mise 249.89 · RUINE: non
+
+
+--- journal Beginner (50 derniers) ---
+10-04 20:39 palier 0 mise 10.00 -> -0.00 LOSS
+10-04 22:02 palier 1 mise 23.00 -> -0.04 LOSS
+10-04 22:07 palier 2 mise 52.90 -> -0.07 LOSS
+10-04 22:36 palier 0 mise 10.00 -> -0.02 LOSS
+10-04 23:08 palier 1 mise 23.00 -> -0.02 LOSS
+10-04 23:14 palier 2 mise 52.90 -> -0.09 LOSS
+10-05 00:58 palier 0 mise 10.00 -> -0.04 LOSS
+10-05 01:17 palier 1 mise 23.00 -> -0.05 LOSS
+10-05 01:24 palier 2 mise 52.90 -> -0.05 LOSS
+10-05 06:47 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 06:52 palier 1 mise 23.00 -> -0.02 LOSS
+10-05 06:57 palier 2 mise 52.90 -> -0.10 LOSS
+10-05 07:13 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 07:43 palier 1 mise 23.00 -> -0.07 LOSS
+10-05 08:05 palier 2 mise 52.90 -> -0.08 LOSS
+10-05 13:11 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 13:47 palier 1 mise 23.00 -> -0.04 LOSS
+10-05 13:52 palier 2 mise 52.90 -> -0.04 LOSS
+10-05 14:08 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 14:13 palier 1 mise 23.00 -> -0.09 LOSS
+10-05 18:16 palier 2 mise 52.90 -> -0.08 LOSS
+10-05 18:34 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 18:43 palier 1 mise 23.00 -> -0.04 LOSS
+10-05 18:48 palier 2 mise 52.90 -> -0.12 LOSS
+10-05 19:12 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 19:17 palier 1 mise 23.00 -> -0.03 LOSS
+10-05 19:22 palier 2 mise 52.90 -> -0.12 LOSS
+10-05 20:20 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 20:50 palier 1 mise 23.00 -> -0.05 LOSS
+10-05 21:34 palier 2 mise 52.90 -> -0.10 LOSS
+10-05 21:50 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 22:19 palier 1 mise 23.00 -> -0.07 LOSS
+10-05 23:03 palier 2 mise 52.90 -> -0.11 LOSS
+10-06 01:01 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 01:06 palier 1 mise 23.00 -> -0.07 LOSS
+10-06 07:53 palier 2 mise 52.90 -> -0.12 LOSS
+10-06 08:17 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 08:22 palier 1 mise 23.00 -> -0.03 LOSS
+10-06 08:27 palier 2 mise 52.90 -> -0.12 LOSS
+10-06 08:44 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 08:49 palier 1 mise 23.00 -> -0.04 LOSS
+10-06 08:56 palier 2 mise 52.90 -> -0.08 LOSS
+10-06 09:16 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 10:11 palier 1 mise 23.00 -> -0.06 LOSS
+10-06 10:45 palier 2 mise 52.90 -> -0.09 LOSS
+10-06 11:15 palier 0 mise 10.00 -> -0.03 LOSS
+10-06 11:33 palier 1 mise 23.00 -> -0.04 LOSS
+10-06 11:39 palier 2 mise 52.90 -> -0.12 LOSS
+10-06 13:36 palier 0 mise 10.00 -> -0.03 LOSS
+10-06 13:46 palier 1 mise 23.00 -> -0.06 LOSS
+
+--- journal Balance (50 derniers) ---
+10-04 22:02 palier 3 mise 138.24 -> -0.25 LOSS
+10-04 22:36 palier 0 mise 10.00 -> -0.02 LOSS
+10-04 23:08 palier 1 mise 24.00 -> -0.02 LOSS
+10-04 23:14 palier 2 mise 57.60 -> -0.10 LOSS
+10-05 00:58 palier 3 mise 138.24 -> -0.59 LOSS
+10-05 01:17 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 01:24 palier 1 mise 24.00 -> -0.02 LOSS
+10-05 01:29 palier 2 mise 57.60 -> -0.28 LOSS
+10-05 06:47 palier 3 mise 138.24 -> -0.26 LOSS
+10-05 07:03 palier 0 mise 10.00 -> -0.01 LOSS
+10-05 07:08 palier 1 mise 24.00 -> -0.06 LOSS
+10-05 07:13 palier 2 mise 57.60 -> -0.09 LOSS
+10-05 07:43 palier 3 mise 138.24 -> -0.43 LOSS
+10-05 08:05 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 08:10 palier 1 mise 24.00 -> -0.05 LOSS
+10-05 13:11 palier 2 mise 57.60 -> -0.12 LOSS
+10-05 13:47 palier 3 mise 138.24 -> -0.26 LOSS
+10-05 14:06 palier 0 mise 10.00 -> +0.00 WIN
+10-05 14:13 palier 0 mise 10.00 -> -0.04 LOSS
+10-05 18:16 palier 1 mise 24.00 -> -0.04 LOSS
+10-05 18:21 palier 2 mise 57.60 -> -0.10 LOSS
+10-05 18:34 palier 3 mise 138.24 -> -0.29 LOSS
+10-05 18:51 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 18:56 palier 1 mise 24.00 -> -0.05 LOSS
+10-05 19:12 palier 2 mise 57.60 -> -0.10 LOSS
+10-05 19:17 palier 3 mise 138.24 -> -0.16 LOSS
+10-05 19:33 palier 0 mise 10.00 -> -0.03 LOSS
+10-05 20:20 palier 1 mise 24.00 -> -0.06 LOSS
+10-05 20:50 palier 2 mise 57.60 -> -0.12 LOSS
+10-05 21:34 palier 3 mise 138.24 -> -0.27 LOSS
+10-05 21:50 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 22:19 palier 1 mise 24.00 -> -0.07 LOSS
+10-05 23:03 palier 2 mise 57.60 -> -0.12 LOSS
+10-06 01:01 palier 3 mise 138.24 -> -0.29 LOSS
+10-06 07:53 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 08:00 palier 1 mise 24.00 -> -0.04 LOSS
+10-06 08:17 palier 2 mise 57.60 -> -0.10 LOSS
+10-06 08:22 palier 3 mise 138.24 -> -0.16 LOSS
+10-06 08:41 palier 0 mise 10.00 -> -0.01 LOSS
+10-06 08:49 palier 1 mise 24.00 -> -0.04 LOSS
+10-06 08:56 palier 2 mise 57.60 -> -0.09 LOSS
+10-06 09:01 palier 3 mise 138.24 -> -0.33 LOSS
+10-06 09:19 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 10:11 palier 1 mise 24.00 -> -0.06 LOSS
+10-06 10:45 palier 2 mise 57.60 -> -0.10 LOSS
+10-06 10:50 palier 3 mise 138.24 -> -0.32 LOSS
+10-06 11:15 palier 0 mise 10.00 -> -0.03 LOSS
+10-06 11:33 palier 1 mise 24.00 -> -0.04 LOSS
+10-06 11:39 palier 2 mise 57.60 -> -0.13 LOSS
+10-06 13:36 palier 3 mise 138.24 -> -0.39 LOSS
+
+--- journal Pro (50 derniers) ---
+10-04 22:36 palier 0 mise 10.00 -> -0.02 LOSS
+10-04 23:08 palier 1 mise 25.00 -> -0.02 LOSS
+10-04 23:14 palier 2 mise 62.50 -> -0.11 LOSS
+10-05 00:58 palier 3 mise 156.25 -> -0.67 LOSS
+10-05 01:17 palier 4 mise 237.23 -> -0.54 LOSS
+10-05 06:47 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 06:52 palier 1 mise 25.00 -> -0.02 LOSS
+10-05 06:57 palier 2 mise 62.50 -> -0.12 LOSS
+10-05 07:02 palier 3 mise 156.25 -> -0.26 LOSS
+10-05 07:07 palier 4 mise 236.99 -> -0.37 LOSS
+10-05 07:43 palier 0 mise 10.00 -> -0.03 LOSS
+10-05 08:05 palier 1 mise 25.00 -> -0.04 LOSS
+10-05 08:10 palier 2 mise 62.50 -> -0.14 LOSS
+10-05 13:11 palier 3 mise 156.25 -> -0.31 LOSS
+10-05 13:47 palier 4 mise 236.77 -> -0.45 LOSS
+10-05 14:06 palier 0 mise 10.00 -> +0.00 WIN
+10-05 14:13 palier 0 mise 10.00 -> -0.04 LOSS
+10-05 18:16 palier 1 mise 25.00 -> -0.04 LOSS
+10-05 18:21 palier 2 mise 62.50 -> -0.11 LOSS
+10-05 18:34 palier 3 mise 156.25 -> -0.33 LOSS
+10-05 18:43 palier 4 mise 236.53 -> -0.44 LOSS
+10-05 19:12 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 19:17 palier 1 mise 25.00 -> -0.03 LOSS
+10-05 19:22 palier 2 mise 62.50 -> -0.14 LOSS
+10-05 19:33 palier 3 mise 156.25 -> -0.51 LOSS
+10-05 20:20 palier 4 mise 236.24 -> -0.55 LOSS
+10-05 20:50 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 21:34 palier 1 mise 25.00 -> -0.05 LOSS
+10-05 21:49 palier 2 mise 62.50 -> -0.09 LOSS
+10-05 22:19 palier 3 mise 156.25 -> -0.45 LOSS
+10-05 23:03 palier 4 mise 235.95 -> -0.48 LOSS
+10-06 01:01 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 01:06 palier 1 mise 25.00 -> -0.07 LOSS
+10-06 07:53 palier 2 mise 62.50 -> -0.14 LOSS
+10-06 08:00 palier 3 mise 156.25 -> -0.28 LOSS
+10-06 08:17 palier 4 mise 235.70 -> -0.42 LOSS
+10-06 08:33 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 08:41 palier 1 mise 25.00 -> -0.02 LOSS
+10-06 08:49 palier 2 mise 62.50 -> -0.10 LOSS
+10-06 08:56 palier 3 mise 156.25 -> -0.24 LOSS
+10-06 09:01 palier 4 mise 235.50 -> -0.57 LOSS
+10-06 09:19 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 10:11 palier 1 mise 25.00 -> -0.06 LOSS
+10-06 10:45 palier 2 mise 62.50 -> -0.10 LOSS
+10-06 10:50 palier 3 mise 156.25 -> -0.37 LOSS
+10-06 11:15 palier 4 mise 235.22 -> -0.68 LOSS
+10-06 11:33 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 11:39 palier 1 mise 25.00 -> -0.06 LOSS
+10-06 13:36 palier 2 mise 62.50 -> -0.18 LOSS
+10-06 13:46 palier 3 mise 156.25 -> -0.40 LOSS
+
+--- journal Expert (50 derniers) ---
+10-05 01:17 palier 1 mise 26.00 -> -0.06 LOSS
+10-05 01:24 palier 2 mise 67.60 -> -0.07 LOSS
+10-05 01:29 palier 3 mise 175.76 -> -0.85 LOSS
+10-05 06:47 palier 4 mise 233.50 -> -0.44 LOSS
+10-05 06:52 palier 5 mise 233.39 -> -0.19 LOSS
+10-05 07:08 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 07:13 palier 1 mise 26.00 -> -0.04 LOSS
+10-05 07:43 palier 2 mise 67.60 -> -0.21 LOSS
+10-05 08:05 palier 3 mise 175.76 -> -0.26 LOSS
+10-05 08:10 palier 4 mise 233.21 -> -0.53 LOSS
+10-05 13:11 palier 5 mise 233.08 -> -0.47 LOSS
+10-05 13:47 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 13:52 palier 1 mise 26.00 -> -0.02 LOSS
+10-05 13:58 palier 2 mise 67.60 -> -0.20 LOSS
+10-05 14:06 palier 3 mise 175.76 -> +0.01 WIN
+10-05 14:13 palier 0 mise 10.00 -> -0.04 LOSS
+10-05 18:16 palier 1 mise 26.00 -> -0.04 LOSS
+10-05 18:21 palier 2 mise 67.60 -> -0.12 LOSS
+10-05 18:34 palier 3 mise 175.76 -> -0.37 LOSS
+10-05 18:43 palier 4 mise 232.76 -> -0.43 LOSS
+10-05 18:48 palier 5 mise 232.65 -> -0.51 LOSS
+10-05 19:12 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 19:17 palier 1 mise 26.00 -> -0.03 LOSS
+10-05 19:22 palier 2 mise 67.60 -> -0.15 LOSS
+10-05 19:33 palier 3 mise 175.76 -> -0.58 LOSS
+10-05 20:20 palier 4 mise 232.33 -> -0.54 LOSS
+10-05 20:50 palier 5 mise 232.20 -> -0.50 LOSS
+10-05 21:34 palier 0 mise 10.00 -> -0.02 LOSS
+10-05 21:49 palier 1 mise 26.00 -> -0.04 LOSS
+10-05 22:19 palier 2 mise 67.60 -> -0.19 LOSS
+10-05 23:03 palier 3 mise 175.76 -> -0.36 LOSS
+10-06 01:01 palier 4 mise 231.92 -> -0.48 LOSS
+10-06 01:06 palier 5 mise 231.80 -> -0.68 LOSS
+10-06 07:53 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 08:00 palier 1 mise 26.00 -> -0.05 LOSS
+10-06 08:17 palier 2 mise 67.60 -> -0.12 LOSS
+10-06 08:22 palier 3 mise 175.76 -> -0.20 LOSS
+10-06 08:27 palier 4 mise 231.53 -> -0.51 LOSS
+10-06 08:32 palier 5 mise 231.40 -> -0.58 LOSS
+10-06 08:49 palier 0 mise 10.00 -> -0.02 LOSS
+10-06 08:56 palier 1 mise 26.00 -> -0.04 LOSS
+10-06 09:01 palier 2 mise 67.60 -> -0.16 LOSS
+10-06 09:16 palier 3 mise 175.76 -> -0.27 LOSS
+10-06 10:11 palier 4 mise 231.14 -> -0.56 LOSS
+10-06 10:45 palier 5 mise 231.00 -> -0.38 LOSS
+10-06 11:15 palier 0 mise 10.00 -> -0.03 LOSS
+10-06 11:33 palier 1 mise 26.00 -> -0.05 LOSS
+10-06 11:39 palier 2 mise 67.60 -> -0.15 LOSS
+10-06 13:36 palier 3 mise 175.76 -> -0.50 LOSS
+10-06 13:46 palier 4 mise 230.72 -> -0.59 LOSS
