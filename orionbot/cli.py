@@ -50,7 +50,8 @@ def cmd_backtest(a):
 def cmd_run(a):
     from . import trader
     trader.run(symbol=a.symbol, profile=profiles.get(a.profile),
-               stake=a.stake, expiry_min=a.expiry, real=a.real)
+               stake=a.stake, expiry_min=a.expiry, real=a.real,
+               exchange=a.exchange, mode=a.mode)
 
 
 def main():
@@ -76,6 +77,9 @@ def main():
     r.add_argument("--stake", type=float, default=10.0)
     r.add_argument("--expiry", type=int, default=5, help="minutes de détention")
     r.add_argument("--real", action="store_true")
+    r.add_argument("--exchange", default="binance", choices=["binance", "okx"])
+    r.add_argument("--mode", default="optimal", choices=["optimal", "penifx"],
+                   help="optimal = config validée 60j ; penifx = mécanique d'origine")
     r.set_defaults(func=cmd_run)
 
     a = ap.parse_args()
