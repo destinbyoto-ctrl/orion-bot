@@ -44,11 +44,27 @@ python3 -m orionbot.cli backtest BTCUSDT --days 30 --all-profiles
 # Bot papier (temps réel, données live, aucun ordre réel)
 python3 -m orionbot.cli run BTCUSDT --profile balance
 
-# Bot RÉEL (ordres signés Binance depuis ta machine)
+# Bot RÉEL Binance (ordres signés, depuis ta machine)
 export BINANCE_API_KEY="..."
 export BINANCE_API_SECRET="..."
 python3 -m orionbot.cli run BTCUSDT --profile balance --real
+
+# Bot RÉEL OKX
+export OKX_API_KEY="..."
+export OKX_API_SECRET="..."
+export OKX_API_PASSPHRASE="..."
+python3 -m orionbot.cli run BTCUSDT --profile balance --real --exchange okx
+
+# Campagne d'optimisation (recherche sur 2/3, validation hors échantillon sur 1/3)
+python3 -c "from orionbot import optimize; optimize.campaign(days=60)"
 ```
+
+## Les 2 courtiers
+
+* **Binance** : spot, ordres signés HMAC (`/api/v3/order`). Le serveur de Mugogo est geo-bloqué (HTTP 451) : le réel Binance passe uniquement depuis sa machine.
+* **OKX** (`okx.py`) : spot « cash », API v5 signée (OK-ACCESS-KEY/SIGN/TIMESTAMP/PASSPHRASE), accessible serveur ET machine. Clés : OKX -> API -> permission « Trade ».
+
+Les deux courtiers partagent le même moteur de signaux et le même backtester.
 
 ## Les 4 profils (identiques à Penifx)
 
@@ -58,6 +74,26 @@ python3 -m orionbot.cli run BTCUSDT --profile balance --real
 | Balance  | 3            | 4                  | ×2,4           | 5 USDT   |
 | Pro      | 4            | 5                  | ×2,5           | 5 USDT   |
 | Expert   | 5            | 6                  | ×2,6           | 5 USDT   |
+
+## Résultats de la campagne d'optimisation (60 jours réels BTCUSDT 1m)
+
+Méthode honnête : recherche sur 40 jours (train), jugement final sur 20 jours
+jamais vus (test). Frais 0,10 %/côté partout.
+
+*Configurations gagnantes (train → test hors échantillon)*
+trend_hold + TP 3% / SL 1,5% + martingale : +11,31 → *+3,03* (53% wr)
+momentum + TP 4% / SL 2% + martingale : +9,63 → *+1,58* (62% wr)
+
+*Ce que la campagne a démontré*
+1. Toutes les variantes à horizon court (expiration fixe, TP < 1,5%) perdent : les frais 0,2% aller-retour dépassent le mouvement typique de BTC
+2. Seules les cibles larges (TP 3-4%) alignées sur la tendance 15m survivent, en train ET en test
+3. La martingale aggrave toutes les variantes court-espaçées ; elle n'aide que les rares configurations à forte winrate
+
+*Avertissements*
+Le buy-and-hold a fait +13,4% sur la même fenêtre de test : le bot protège mieux
+le capital en marché baissier mais ne bat pas un marché haussier à ce stade.
+Échantillons faibles (8-15 trades en test) : le mode optimal est livré en PAPIER
+par défaut ; ne passe en réel qu'après validation continue.
 
 ## Mécanique d'un trade
 
@@ -70,6 +106,13 @@ python3 -m orionbot.cli run BTCUSDT --profile balance --real
    prochaine mise × multiplicateur (jusqu'au cap et au max de paliers)
 5. Limite de perte journalière (défaut −15 %) → pause automatique jusqu'au
    lendemain. Cap de mise : 25 % du capital par trade.
+
+## Mode optimal (par défaut du `run`)
+
+`--mode optimal` : entrée trend_hold (score 15m > percentile 75 des 48 dernières
+heures, RSI 1m < 62), sortie TP +3% / SL -1,5%, martingale ×2,6 max 6 paliers,
+limite journalière -15% avec pause. C'est la configuration validée ci-dessus.
+`--mode penifx` conserve la mécanique d'origine (conf ≥ 65, expiration fixe).
 
 ## Licence
 
