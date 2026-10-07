@@ -65,7 +65,7 @@ https://github.com/destinbyoto-ctrl/orion-bot · MAJ auto 30 s</div>
 
 <div class="grid">
 <div class="card" id="cardEngine">
-<h2>🧠 Moteur IA <span class="tag" id="engState">—</span></h2>
+<h2>🧠 Moteur IA <span class="tag" id="engState">—</span> <span class="tag" id="srcTag">—</span></h2>
 <div class="tfs">
 <div class="tf"><u>1 min</u><b id="tf1">—</b></div>
 <div class="tf"><u>5 min</u><b id="tf5">—</b></div>
@@ -241,21 +241,34 @@ function signal_at(b,i){
  return {conf,side:agg>0?'BUY':'SELL',agg,tf:s}}
 
 /* ================== DONNÉES ================== */
+let DSRC='—';
 async function klinesBinance(limit){
- const url='https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit='+limit;
- const r=await fetch(url);const j=await r.json();
- return j.map(k=>[k[0],+k[1],+k[2],+k[3],+k[4],+k[5]])}
-async function klinesOKX(limit){
- let out=[],after=Date.now();
+ // Binance : max 1000 par requête -> pagination endTime vers le passé
+ const out=[];let end=Date.now();
  while(out.length<limit){
+  const n=Math.min(1000,limit-out.length);
+  const r=await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit='+n+'&endTime='+end);
+  const j=await r.json();
+  if(!Array.isArray(j)||!j.length)throw new Error(j.msg||('HTTP réponse inattendue'));
+  out.push(...j.map(k=>[k[0],+k[1],+k[2],+k[3],+k[4],+k[5]]));
+  end=j[0][0]-1}
+ return out.sort((a,b)=>a[0]-b[0]).slice(-limit)}
+async function klinesOKX(limit){
+ let out=[],after=Date.now(),tries=0;
+ while(out.length<limit&&tries<40){
   const r=await fetch('https://www.okx.com/api/v5/market/candles?instId=BTC-USDT&bar=1m&limit=100&after='+after);
   const j=await r.json();
   if(j.code!=='0'||!j.data||!j.data.length)break;
   for(const k of j.data)out.push([+k[0],+k[1],+k[2],+k[3],+k[4],+k[5]]);
-  after=j.data[j.data.length-1][0]}
+  after=j.data[j.data.length-1][0];tries++}
+ if(out.length<Math.min(950,limit))throw new Error('OKX incomplet');
  return out.sort((a,b)=>a[0]-b[0]).slice(-limit)}
-async function klines(limit){try{return await klinesBinance(limit)}
- catch(e){elog('Binance KO ('+e.message+') → OKX');return await klinesOKX(limit)}}
+async function klines(limit){
+ let err=null;
+ try{const r=await klinesBinance(limit);DSRC='Binance';return r}catch(e){err=e}
+ elog('Binance indisponible ('+err.message+') → essai OKX');
+ try{const r=await klinesOKX(limit);DSRC='OKX';return r}catch(e){err=e}
+ DSRC='ERREUR';throw err}
 
 /* ================== SEUIL P75 ================== */
 function p75Of(bars){
@@ -323,6 +336,8 @@ async function tryReal(action,arg){
 function fmt(n){return (+n).toFixed(2)}
 function render(){
  document.getElementById('hdrPx').textContent=LAST?fmt(LAST):'—';
+ const st=document.getElementById('srcTag');
+ if(st)st.textContent=(DSRC==='ERREUR'?'🚫 ':DSRC==='—'?'':'✓ ')+DSRC+(lastOK?' · maj '+new Date(lastOK).toLocaleTimeString('fr-FR'):'');
  if(SIG){
   document.getElementById('tf1').textContent=(SIG.tf['1m']>=0?'+':'')+SIG.tf['1m'].toFixed(3);
   document.getElementById('tf5').textContent=(SIG.tf['5m']>=0?'+':'')+SIG.tf['5m'].toFixed(3);
@@ -360,24 +375,32 @@ function renderJournal(){const j=document.getElementById('journal');
   '<div class="j"><span class="t">'+e.t+'</span><span class="'+(e.cls||'')+'">'+e.txt+'</span></div>').join('')}
 
 /* ================== BOUCLE ================== */
-let busy=false;
+let busy=false,lastOK=0;
+async function computeThreshold(){
+ if(window._thrBusy)return;window._thrBusy=true;
+ try{
+  const big=await klines(2880);
+  if(big.length>2000){THR=p75Of(big);window._thrAt=Date.now();
+   elog('seuil p75 ('+DSRC+') : '+THR.toFixed(3));render()}
+  else elog('historique court, seuil par défaut')}
+ catch(e){elog('seuil indisponible, valeur actuelle '+THR.toFixed(3))}
+ window._thrBusy=false}
 async function tick(){
  if(busy)return;busy=true;
  try{
+  elog('connexion marché…');
   const bars=await klines(1000);
-  if(bars.length<950){elog('données insuffisantes');return}
+  if(!Array.isArray(bars)||bars.length<950)throw new Error('données insuffisantes ('+(bars.length||0)+' barres)');
   BARS=bars;LAST=bars[bars.length-1][4];
   const i=bars.length-1;
   SIG=signal_at(bars,i);
   RSI1=rsi(bars.map(b=>b[4]),14)[i];
   const day=Math.floor(bars[i][0]/86400000);
   if(day!==D.day){D.day=day;D.dayEq=D.eq;save()}
-  // seuil p75 : recalculé toutes les heures avec 2880 barres
-  if(!window._thrAt||Date.now()-window._thrAt>3600000){
-   try{const big=await klines(2880);
-    if(big.length>2000){THR=p75Of(big);window._thrAt=Date.now();
-     elog('seuil p75 recalculé : '+THR.toFixed(3))}}
-   catch(e){elog('seuil : reuse '+THR.toFixed(3))}}
+  lastOK=Date.now();
+  render();  // RENDU IMMÉDIAT : la page s affiche avant le calcul du seuil
+  // seuil p75 : recalculé toutes les heures, en arrière-plan, jamais bloquant
+  if(!window._thrAt||Date.now()-window._thrAt>3600000)computeThreshold();
   // clôtures
   if(D.pos){
    if(LAST>=D.pos.tp){
@@ -395,8 +418,8 @@ async function tick(){
     if(D.real&&D.pos){const o=await tryReal('buy',D.pos.stake);
      if(o&&o.executedQty)D.pos.qty=+o.executedQty;save()}}}
   render();
- }catch(e){elog('tick : '+e.message)}
- busy=false}
+ }catch(e){elog('tick : '+e.message);window._tickErr=e.message}
+ busy=false;render()}
 let RSI1=50;
 
 /* ================== UI EVENTS ================== */
