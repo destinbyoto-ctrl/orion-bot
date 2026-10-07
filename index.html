@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OrionBot Web — Console de trading IA</title>
+<style>
+:root{--bg:#0b1220;--panel:#121a2e;--panel2:#0f1526;--line:#1f2a44;--txt:#dbe4f5;--mut:#7d8bab;
+--cy:#22d3ee;--vi:#a78bfa;--gr:#34d399;--rd:#f87171;--am:#fbbf24}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-size:20px;letter-spacing:.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h1 .dot{width:10px;height:10px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy)}
+.sub{color:var(--mut);font-size:12px;margin:2px 0 16px}
+.badge{font-size:11px;padding:2px 10px;border-radius:999px;border:1px solid var(--line)}
+.badge.paper{color:var(--cy);border-color:var(--cy)}
+.badge.real{color:var(--rd);border-color:var(--rd);animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.55}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.card h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #1a2440}
+.row:last-child{border:none}
+.row b{font-variant-numeric:tabular-nums}
+.px{font-size:24px;font-weight:700;color:var(--cy)}
+.pos .gr{color:var(--gr)}.neg .rd{color:var(--rd)}
+.meter{height:8px;border-radius:6px;background:#0d1730;overflow:hidden;margin:6px 0}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--cy),var(--vi));border-radius:6px;transition:width .5s}
+.tfs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.tf{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 4px}
+.tf u{display:block;font-size:11px;color:var(--mut);text-decoration:none}
+.tf b{font-size:16px;font-variant-numeric:tabular-nums}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--cy)}
+.btn.cy{background:var(--cy);color:#06222b;font-weight:700;border-color:var(--cy)}
+.btn.gr{background:var(--gr);color:#06301f;font-weight:700;border-color:var(--gr)}
+.btn.rd{background:var(--rd);color:#3d0a0a;font-weight:700;border-color:var(--rd)}
+.btn.sm{padding:4px 10px;font-size:12px}
+.switch{position:relative;display:inline-block;width:46px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:#22304e;border-radius:999px;transition:.25s;cursor:pointer}
+.sl:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#8ea3c9;border-radius:50%;transition:.25s}
+.switch input:checked+.sl{background:var(--cy)}
+.switch input:checked+.sl:before{transform:translateX(22px);background:#04222b}
+label.f{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;font-size:13px}
+input[type=number],input[type=text],select{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:6px 8px;border-radius:8px;width:110px;font-size:13px}
+input[type=text].wide{width:100%}
+#journal{max-height:230px;overflow-y:auto;font-size:12px}
+.j{padding:4px 0;border-bottom:1px dashed #1a2440;display:flex;gap:8px}
+.j .t{color:var(--mut);white-space:nowrap}
+.log{white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--mut);max-height:110px;overflow-y:auto}
+.small{font-size:11px;color:var(--mut)}
+a{color:var(--cy)}
+.tag{font-size:10px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
+.ok{color:var(--gr)}.warn{color:var(--am)}.err{color:var(--rd)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1><span class="dot"></span>OrionBot Web <span id="modeBadge" class="badge paper">PAPIER</span>
+<span id="hdrPx" class="px">—</span></h1>
+<div class="sub">Console du moteur validé 60 jours (trend_hold · TP 3% / SL 1,5% · martingale ×2,6) — même logique que le dépôt
+https://github.com/destinbyoto-ctrl/orion-bot · MAJ auto 30 s</div>
+
+<div class="grid">
+<div class="card" id="cardEngine">
+<h2>🧠 Moteur IA <span class="tag" id="engState">—</span></h2>
+<div class="tfs">
+<div class="tf"><u>1 min</u><b id="tf1">—</b></div>
+<div class="tf"><u>5 min</u><b id="tf5">—</b></div>
+<div class="tf"><u>15 min</u><b id="tf15">—</b></div>
+</div>
+<div class="row"><span>Confiance (scale 65 = seuil Penifx)</span><b id="conf">—</b></div>
+<div class="meter"><i id="confBar" style="width:0%"></i></div>
+<div class="row"><span>RSI 1m (entrée &lt; 62)</span><b id="rsi">—</b></div>
+<div class="row"><span>Seuil tendance 15m (p75 48h)</span><b id="thr">—</b></div>
+<div class="row"><span>Signal</span><b id="sig">—</b></div>
+<div class="log" id="engLog">initialisation…</div>
+</div>
+
+<div class="card">
+<h2>📈 Trading <span id="equityBadge" class="tag">—</span></h2>
+<label class="f">Trading auto <span class="switch"><input type="checkbox" id="auto"><span class="sl"></span></span></label>
+<label class="f">Mode RÉEL 🔴 (ordres signés Binance) <span class="switch"><input type="checkbox" id="real"><span class="sl"></span></span></label>
+<label class="f">Mise de base (USDT) <input type="number" id="stake" value="10" step="1" min="5"></label>
+<label class="f">Take-profit % <input type="number" id="tp" value="3" step="0.1" min="0.2"></label>
+<label class="f">Stop-loss % <input type="number" id="sl" value="1.5" step="0.1" min="0.1"></label>
+<label class="f">Martingale <span class="switch"><input type="checkbox" id="mart" checked><span class="sl"></span></span></label>
+<label class="f">Limite journalière % <input type="number" id="daylimit" value="15" step="1" min="1"></label>
+<div style="display:flex;gap:8px;margin-top:8px">
+<button class="btn gr" id="btnBuy">Acheter (manuel)</button>
+<button class="btn rd" id="btnSell">Vendre / clôturer</button>
+</div>
+<p class="small" style="margin-top:8px" id="realNote">Papier par défaut : aucune clé, aucun ordre réel. Le mode réel envoie de vrais ordres market Binance depuis ce navigateur (clés API ci-dessous).</p>
+</div>
+
+<div class="card">
+<h2>💼 Position &amp; capital</h2>
+<div class="row"><span>Équité</span><b id="eq">—</b></div>
+<div class="row"><span>P&amp;L du jour</span><b id="dayPnl">—</b></div>
+<div class="row"><span>Palier martingale</span><b id="step">0</b></div>
+<div class="row"><span>Prochaine mise</span><b id="next">—</b></div>
+<div class="row"><span>Position</span><b id="posTxt">aucune</b></div>
+<div id="posBox" style="display:none;margin-top:8px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px">
+<div class="row"><span>Entrée</span><b id="pEntry">—</b></div>
+<div class="row"><span>Mise</span><b id="pStake">—</b></div>
+<div class="row"><span>TP</span><b id="pTp">—</b></div>
+<div class="row"><span>SL</span><b id="pSl">—</b></div>
+<div class="row"><span>P&amp;L flottant</span><b id="pPnl">—</b></div>
+</div>
+</div>
+
+<div class="card" id="cardJournal">
+<h2>📜 Journal</h2>
+<div id="journal"><p class="small">—</p></div>
+</div>
+
+<div class="card">
+<h2>🔑 Réglages &amp; API Binance (réel)</h2>
+<label class="f">Clé API <input type="text" class="wide" id="apikey" placeholder="BINANCE_API_KEY (localStorage uniquement)"></label>
+<label class="f">Secret <input type="text" class="wide" id="apisec" placeholder="BINANCE_API_SECRET"></label>
+<div style="display:flex;gap:8px;margin:8px 0">
+<button class="btn sm" id="btnTestKeys">Tester les clés</button>
+<button class="btn sm" id="btnWipe">Effacer local</button>
+</div>
+<div class="row"><span>Solde réel USDT</span><b id="realBal">—</b></div>
+<p class="small" style="margin-top:8px">⚠️ Le réel ne s'active que si : trading auto ON, switch RÉEL ON, clés valides. Testé depuis ton IP (le serveur de déploiement est geo-bloqué par Binance). Ne mets que des clés sans droit de retrait.</p>
+</div>
+</div>
+<p class="small" style="margin-top:14px;text-align:center">OrionBot Web v1.0 · backtest 60j : trend_hold +TP3%/SL1,5%+martingale = +11,31 (train) → +3,03 (test) · buy-and-hold même période : +13,4% — le bot protège, il ne bat pas un marché haussier. Le trading comporte un risque de perte totale.</p>
+</div>
+
+<script>
+/* ================== ÉTAT ================== */
+const DKEY='orionweb_v1';
+const D={auto:false,real:false,stake:10,tp:3,sl:1.5,mart:true,daylimit:15,
+        eq:1000,cur:10,step:0,pos:null,jr:[],day:null,dayEq:1000,pauseUntil:0,
+        apikey:'',apisec:'',wins:0,losses:0,fees:0};
+let D2={};
+try{D2=JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){}
+Object.assign(D,D2);
+function save(){const{j,...r}=D;localStorage.setItem(DKEY,JSON.stringify({...r,jr:D.jr.slice(-200)}))}
+function logj(txt,cls){const t=new Date().toLocaleTimeString('fr-FR');
+ D.jr.push({t,txt,cls});if(D.jr.length>200)D.jr.shift();save();renderJournal()}
+function elog(txt){const e=document.getElementById('engLog');
+ e.textContent=(e.textContent.split('\n').slice(-7).join('\n')+'\n'+txt).trim()}
+
+/* ================== ENGINE (portage exact de orionbot/engine.py) ================== */
+// clamp
+function _clamp(x,lo=-1,hi=1){return Math.max(lo,Math.min(hi,x))}
+// ema(vals,period)
+function ema(vals,p){const out=[];const k=2/(p+1);
+ for(let i=0;i<vals.length;i++)out.push(i===0?vals[0]:vals[i]*k+out[out.length-1]*(1-k));
+ return out}
+// rsi Wilder
+function rsi(cl,p=14){const out=[];let g=0,l=0;
+ for(let i=0;i<cl.length;i++){
+  if(i===0){out.push(50);continue}
+  const d=cl[i]-cl[i-1],gg=Math.max(d,0),ll=Math.max(-d,0);
+  if(i<=p){g+=gg;l+=ll;if(i===p){g/=p;l/=p}}
+  else{g=(g*(p-1)+gg)/p;l=(l*(p-1)+ll)/p}
+  out.push(l===0?100:100-100/(1+g/l))}
+ return out}
+// macd -> [line,signal,hist]
+function macd(cl,fast=12,slow=26,sig=9){const ef=ema(cl,fast),es=ema(cl,slow);
+ const line=ef.map((a,i)=>a-es[i]),sg=ema(line,sig);
+ return [line,sg,line.map((a,i)=>a-sg[i])]}
+// atr Wilder
+function atr(bars,p=14){const out=[];const trs=[];
+ for(let i=0;i<bars.length;i++){let tr;
+  if(i===0)tr=bars[i][2]-bars[i][3];
+  else{const pc=bars[i-1][4];
+   tr=Math.max(bars[i][2]-bars[i][3],Math.abs(bars[i][2]-pc),Math.abs(bars[i][3]-pc))}
+  trs.push(tr);
+  if(i<p)out.push(trs.reduce((a,b)=>a+b,0)/(i+1));
+  else out.push((out[out.length-1]*(p-1)+trs[trs.length-1])/p)}
+ return out}
+// bollinger -> [mid,up,low] (tableaux)
+function bollinger(cl,p=20,nb=2){const mid=[],up=[],lo=[];
+ for(let i=0;i<cl.length;i++){const w=cl.slice(Math.max(0,i-p+1),i+1);
+  const m=w.reduce((a,b)=>a+b,0)/w.length;
+  const sd=Math.sqrt(w.reduce((a,b)=>a+(b-m)*(b-m),0)/w.length);
+  mid.push(m);up.push(m+nb*sd);lo.push(m-nb*sd)}
+ return [mid,up,lo]}
+// stochastic -> [k,d]
+function stochastic(bars,p=14,sm=3){const k=[],d=[],ks=[];
+ for(let i=0;i<bars.length;i++){const w=bars.slice(Math.max(0,i-p+1),i+1);
+  const hi=Math.max(...w.map(b=>b[2])),lo=Math.min(...w.map(b=>b[3]));
+  const c=bars[i][4];const kk=(hi===lo)?50:(c-lo)/(hi-lo)*100;
+  ks.push(kk);k.push(kk);d.push(ks.slice(-sm).reduce((a,b)=>a+b,0)/Math.min(sm,ks.length))}
+ return [k,d]}
+// zscore
+function zscore(vals,p=20){const out=[];
+ for(let i=0;i<vals.length;i++){const w=vals.slice(Math.max(0,i-p+1),i+1);
+  const m=w.reduce((a,b)=>a+b,0)/w.length;
+  const sd=Math.sqrt(w.reduce((a,b)=>a+(b-m)*(b-m),0)/w.length)||1e-12;
+  out.push((vals[i]-m)/sd)}
+ return out}
+// tf_score — identique à Python
+function tf_score(bars){
+ if(bars.length<40)return 0;
+ const cl=bars.map(b=>b[4]);
+ const r=rsi(cl,14)[cl.length-1];
+ const [ml,ms,mh]=macd(cl);
+ const a=atr(bars,14)[bars.length-1]||1e-9;
+ const hist=mh[mh.length-1]/a;
+ const e9=ema(cl,9)[cl.length-1],e21=ema(cl,21)[cl.length-1];
+ const cross=(e9-e21)/a;
+ const [mid,up,lo]=bollinger(cl,20);
+ const bpos=(cl[cl.length-1]-mid[mid.length-1])/((up[up.length-1]-lo[lo.length-1])||1e-9);
+ const [k,d]=stochastic(bars,14,3);
+ const st=(k[k.length-1]-d[d.length-1])/20;
+ const vz=zscore(bars.map(b=>b[5]),20)[bars.length-1];
+ const roc=(cl.length>6&&cl[cl.length-6])?(cl[cl.length-1]/cl[cl.length-6]-1):0;
+ const s_rsi=(r<70)?_clamp((r-50)/20):_clamp(-(r-70)/20);
+ const s_macd=_clamp(hist/1.5);
+ const s_ema=_clamp(cross/1.2);
+ const s_boll=_clamp((0.5-bpos)*1.6);
+ const s_st=_clamp(st);
+ const s_mom=_clamp(roc/0.004);
+ let score=0.22*s_rsi+0.24*s_macd+0.20*s_ema+0.10*s_boll+0.12*s_st+0.12*s_mom;
+ score*=(0.7+0.3*Math.min(1,Math.abs(vz)));
+ return _clamp(score)}
+// resample 1m -> factor (identique à data.py : blocs depuis le début)
+function resample(bars,f){const out=[];
+ for(let i=0;i+f<=bars.length;i+=f){const w=bars.slice(i,i+f);
+  out.push([w[0][0],w[0][1],Math.max(...w.map(b=>b[2])),Math.min(...w.map(b=>b[3])),
+            w[w.length-1][4],w.reduce((a,b)=>a+b[5],0)])}
+ return out}
+// signal à l'instant i (identique à engine.signal_at)
+const TF_WEIGHTS={'1m':0.20,'5m':0.35,'15m':0.45};
+function signal_at(b,i){
+ if(i<920)return null;
+ const w1=b.slice(Math.max(0,i-199),i+1);
+ const w5=resample(b.slice(Math.max(0,i-199),i+1),5);
+ const w15=resample(b.slice(Math.max(0,i-899),i+1),15);
+ const s={'1m':tf_score(w1),'5m':tf_score(w5),'15m':tf_score(w15)};
+ const agg=s['1m']*0.20+s['5m']*0.35+s['15m']*0.45;
+ const conf=Math.min(97,50+77*Math.abs(agg));
+ return {conf,side:agg>0?'BUY':'SELL',agg,tf:s}}
+
+/* ================== DONNÉES ================== */
+async function klinesBinance(limit){
+ const url='https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit='+limit;
+ const r=await fetch(url);const j=await r.json();
+ return j.map(k=>[k[0],+k[1],+k[2],+k[3],+k[4],+k[5]])}
+async function klinesOKX(limit){
+ let out=[],after=Date.now();
+ while(out.length<limit){
+  const r=await fetch('https://www.okx.com/api/v5/market/candles?instId=BTC-USDT&bar=1m&limit=100&after='+after);
+  const j=await r.json();
+  if(j.code!=='0'||!j.data||!j.data.length)break;
+  for(const k of j.data)out.push([+k[0],+k[1],+k[2],+k[3],+k[4],+k[5]]);
+  after=j.data[j.data.length-1][0]}
+ return out.sort((a,b)=>a[0]-b[0]).slice(-limit)}
+async function klines(limit){try{return await klinesBinance(limit)}
+ catch(e){elog('Binance KO ('+e.message+') → OKX');return await klinesOKX(limit)}}
+
+/* ================== SEUIL P75 ================== */
+function p75Of(bars){
+ const vals=[];
+ for(let i=920;i<bars.length;i+=15){const s=signal_at(bars,i);
+  if(s)vals.push(s.tf['15m'])}
+ vals.sort((a,b)=>a-b);
+ return vals.length?vals[Math.floor(vals.length*0.75)]:0.218}
+function pct(arr,p){const v=[...arr].sort((a,b)=>a-b);return v[Math.floor(v.length*p)]}
+
+/* ================== BINANCE RÉEL (HMAC navigateur) ================== */
+async function bSigned(path,params,method='POST'){
+ const qs=new URLSearchParams({...params,timestamp:Date.now(),recvWindow:8000}).toString();
+ const enc=new TextEncoder();
+ const key=await crypto.subtle.importKey('raw',enc.encode(D.apisec),
+  {name:'HMAC',hash:'SHA-256'},false,['sign']);
+ const sig=Array.from(new Uint8Array(await crypto.subtle.sign('HMAC',key,enc.encode(qs))))
+  .map(b=>b.toString(16).padStart(2,'0')).join('');
+ const r=await fetch('https://api.binance.com'+path+'?'+qs+'&signature='+sig,
+  {method,headers:{'X-MBX-APIKEY':D.apikey}});
+ const j=await r.json();
+ if(j.code)throw new Error(j.msg||('code '+j.code));
+ return j}
+async function realBalance(){const a=await bSigned('/api/v3/account',{},'GET');
+ const u=a.balances.find(b=>b.asset==='USDT');
+ return u?+u.free:0}
+async function realBuy(usdt){return await bSigned('/api/v3/order',
+ {symbol:'BTCUSDT',side:'BUY',type:'MARKET',quoteOrderQty:+usdt.toFixed(2)})}
+async function realSell(qty){return await bSigned('/api/v3/order',
+ {symbol:'BTCUSDT',side:'SELL',type:'MARKET',quantity:+(+qty).toFixed(6)})}
+
+/* ================== TRADING ================== */
+let THR=0.218,LAST=null,SIG=null,BARS=null;
+const FEE=0.001;
+function capStake(s){return Math.max(0,Math.min(s,D.eq*0.25))}
+function openPos(px){
+ const s=capStake(D.cur);
+ if(s<5){elog('mise < 5 USDT : pas d entrée');return}
+ D.pos={entry:px*(1+FEE),stake:s,step:D.step,qty:s/px,tp:null,sl:null};
+ const tp=+document.getElementById('tp').value/100,sl=+document.getElementById('sl').value/100;
+ D.pos.tp=D.pos.entry*(1+tp);D.pos.sl=D.pos.entry*(1-sl);
+ save();logj('🟢 BUY · mise '+s.toFixed(2)+' USDT · palier '+D.step,'ok')}
+function closePos(px,why){
+ const p=D.pos,exit=px*(1-FEE);
+ const pnl=p.stake*(exit/p.entry-1);
+ D.eq+=pnl;D.fees+=p.stake*FEE*2;
+ if(pnl>0){D.wins++;D.step=0;D.cur=+document.getElementById('stake').value}
+ else{D.losses++;D.step++;
+  if(D.mart){if(D.step>=6){D.step=0;D.cur=+document.getElementById('stake').value;
+    D.pauseUntil=Date.now()+30*60000;logj('⏸️ 6 pertes d affilée : pause 30 min','warn')}
+   else D.cur*=2.6}
+  else{D.step=0;D.cur=+document.getElementById('stake').value}}
+ logj((pnl>0?'✅':'❌')+' '+why+' '+(pnl>=0?'+':'')+pnl.toFixed(2)+' USDT · équité '+D.eq.toFixed(2),
+      pnl>=0?'ok':'err');
+ D.pos=null;save()}
+async function tryReal(action,arg){
+ try{
+  if(action==='buy'){const o=await realBuy(arg);
+   logj('🔴 ordre RÉEL BUY exécuté id='+o.orderId,'warn');return o}
+  const o=await realSell(arg);
+  logj('🔴 ordre RÉEL SELL exécuté id='+o.orderId,'warn');return o}
+ catch(e){logj('🚫 ordre réel refusé : '+e.message,'err');return null}}
+
+/* ================== RENDU ================== */
+function fmt(n){return (+n).toFixed(2)}
+function render(){
+ document.getElementById('hdrPx').textContent=LAST?fmt(LAST):'—';
+ if(SIG){
+  document.getElementById('tf1').textContent=(SIG.tf['1m']>=0?'+':'')+SIG.tf['1m'].toFixed(3);
+  document.getElementById('tf5').textContent=(SIG.tf['5m']>=0?'+':'')+SIG.tf['5m'].toFixed(3);
+  document.getElementById('tf15').textContent=(SIG.tf['15m']>=0?'+':'')+SIG.tf['15m'].toFixed(3);
+  document.getElementById('conf').textContent=SIG.conf.toFixed(1)+' %';
+  document.getElementById('confBar').style.width=Math.min(100,SIG.conf)+'%';
+  document.getElementById('rsi').textContent=RSI1.toFixed(1);
+  document.getElementById('thr').textContent=THR.toFixed(3);
+  const th=SIG.tf['15m']>THR&&RSI1<62;
+  document.getElementById('sig').innerHTML=th?'<span class="ok">ENTRY trend_hold ✔</span>'
+   :SIG.conf>=65?'<span class="warn">momentum '+SIG.conf.toFixed(0)+'%</span>':'<span class="mut">HOLD</span>';
+  document.getElementById('engState').textContent=th?'PRÊT':'ATTENTE'}
+ document.getElementById('eq').textContent=fmt(D.eq)+' USDT';
+ const dP=D.eq-D.dayEq;
+ document.getElementById('dayPnl').innerHTML=(dP>=0?'<span class="ok">+':'<span class="err">')+fmt(dP)+'</span>';
+ document.getElementById('step').textContent=D.step;
+ document.getElementById('next').textContent=fmt(capStake(D.cur))+' USDT';
+ const mb=document.getElementById('modeBadge');
+ if(D.real){mb.textContent='RÉEL 🔴';mb.className='badge real'}else{mb.textContent='PAPIER';mb.className='badge paper'}
+ document.getElementById('equityBadge').textContent='W '+D.wins+' / L '+D.losses;
+ if(D.pos){const p=D.pos,px=LAST||p.entry;
+  document.getElementById('posBox').style.display='block';
+  document.getElementById('pEntry').textContent=fmt(p.entry);
+  document.getElementById('pStake').textContent=fmt(p.stake)+' USDT';
+  document.getElementById('pTp').textContent=fmt(p.tp);
+  document.getElementById('pSl').textContent=fmt(p.sl);
+  const fl=p.stake*(px*(1-FEE)/p.entry-1);
+  document.getElementById('pPnl').innerHTML=(fl>=0?'<span class="ok">+':'<span class="err">')+fmt(fl)+'</span>';
+  document.getElementById('posTxt').innerHTML='<span class="ok">ouverte</span>'}
+ else{document.getElementById('posBox').style.display='none';
+  document.getElementById('posTxt').textContent=Date.now()<D.pauseUntil?'pause ⏸️':'aucune'}}
+function renderJournal(){const j=document.getElementById('journal');
+ if(!D.jr.length){j.innerHTML='<p class="small">—</p>';return}
+ j.innerHTML=D.jr.slice(-40).reverse().map(e=>
+  '<div class="j"><span class="t">'+e.t+'</span><span class="'+(e.cls||'')+'">'+e.txt+'</span></div>').join('')}
+
+/* ================== BOUCLE ================== */
+let busy=false;
+async function tick(){
+ if(busy)return;busy=true;
+ try{
+  const bars=await klines(1000);
+  if(bars.length<950){elog('données insuffisantes');return}
+  BARS=bars;LAST=bars[bars.length-1][4];
+  const i=bars.length-1;
+  SIG=signal_at(bars,i);
+  RSI1=rsi(bars.map(b=>b[4]),14)[i];
+  const day=Math.floor(bars[i][0]/86400000);
+  if(day!==D.day){D.day=day;D.dayEq=D.eq;save()}
+  // seuil p75 : recalculé toutes les heures avec 2880 barres
+  if(!window._thrAt||Date.now()-window._thrAt>3600000){
+   try{const big=await klines(2880);
+    if(big.length>2000){THR=p75Of(big);window._thrAt=Date.now();
+     elog('seuil p75 recalculé : '+THR.toFixed(3))}}
+   catch(e){elog('seuil : reuse '+THR.toFixed(3))}}
+  // clôtures
+  if(D.pos){
+   if(LAST>=D.pos.tp){
+    if(D.real&&D.pos.qty)await tryReal('sell',D.pos.qty);
+    closePos(LAST,'TP atteint')}
+   else if(LAST<=D.pos.sl){
+    if(D.real&&D.pos.qty)await tryReal('sell',D.pos.qty);
+    closePos(LAST,'SL touché')}}
+  // entrées auto
+  const auto=document.getElementById('auto').checked;
+  const dLoss=(D.dayEq-D.eq)/D.dayEq*100;
+  if(!D.pos&&auto&&Date.now()>=D.pauseUntil&&dLoss<+document.getElementById('daylimit').value){
+   const enter=SIG&&SIG.tf['15m']>THR&&RSI1<62;
+   if(enter){openPos(LAST);
+    if(D.real&&D.pos){const o=await tryReal('buy',D.pos.stake);
+     if(o&&o.executedQty)D.pos.qty=+o.executedQty;save()}}}
+  render();
+ }catch(e){elog('tick : '+e.message)}
+ busy=false}
+let RSI1=50;
+
+/* ================== UI EVENTS ================== */
+document.getElementById('auto').checked=D.auto;
+document.getElementById('real').checked=D.real;
+document.getElementById('stake').value=D.stake;
+document.getElementById('mart').checked=D.mart;
+document.getElementById('apikey').value=D.apikey||'';
+document.getElementById('apisec').value=D.apisec||'';
+function bindInputs(){
+ for(const [id,key] of [['auto','auto'],['real','real'],['stake','stake'],['mart','mart']]){
+  document.getElementById(id).addEventListener('change',e=>{
+   D[key]=(e.target.type==='checkbox')?e.target.checked:+e.target.value;
+   if(key==='stake')D.cur=Math.max(5,+e.target.value);
+   save();render()})}
+ document.getElementById('apikey').addEventListener('change',e=>{D.apikey=e.target.value.trim();save()});
+ document.getElementById('apisec').addEventListener('change',e=>{D.apisec=e.target.value.trim();save()})}
+document.getElementById('btnBuy').addEventListener('click',async()=>{
+ if(D.pos){alert('Position déjà ouverte');return}
+ if(!LAST){alert('Pas encore de prix');return}
+ openPos(LAST);
+ if(D.real&&D.pos){const o=await tryReal('buy',D.pos.stake);
+  if(o&&o.executedQty){D.pos.qty=+o.executedQty;save()}}
+ render()});
+document.getElementById('btnSell').addEventListener('click',async()=>{
+ if(!D.pos){alert('Aucune position');return}
+ if(D.real&&D.pos.qty)await tryReal('sell',D.pos.qty);
+ closePos(LAST,'clôture manuelle');render()});
+document.getElementById('btnTestKeys').addEventListener('click',async()=>{
+ if(!D.apikey||!D.apisec){alert('Renseigne clé + secret');return}
+ try{const b=await realBalance();
+  document.getElementById('realBal').textContent=fmt(b)+' USDT';
+  logj('🔑 clés OK · solde '+fmt(b)+' USDT','ok')}
+ catch(e){document.getElementById('realBal').textContent='ERREUR';
+  logj('🔑 clés refusées : '+e.message,'err')}});
+document.getElementById('btnWipe').addEventListener('click',()=>{
+ if(confirm('Effacer équité, position, journal et clés ?')){
+  localStorage.removeItem(DKEY);location.reload()}});
+document.getElementById('real').addEventListener('change',e=>{
+ if(e.target.checked&&!D.apikey)alert('Mode réel : renseigne tes clés API Binance (sans droit de retrait).');
+ logj(e.target.checked?'🔴 MODE RÉEL ARMÉ':'mode papier réactivé','warn')});
+
+/* ================== DÉMARRAGE ================== */
+bindInputs();renderJournal();render();
+tick();setInterval(tick,30000);
+</script>
+</body>
+</html>
